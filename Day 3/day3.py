@@ -1,28 +1,38 @@
+from collections import defaultdict
+
 with open('input.txt') as f:
     content = f.readlines()
 
+def parse(row):
+    num, _, xy, offset = row.split()
+    num = num[1:]
+    x, y = xy[:-1].split(",")
+    w, h = offset.split('x')
+    return int(num), int(x), int(y), int(w), int(h)
+
 # Part 1 
-w, h = 1000, 1000;
-matrix = [[0 for x in range(w)] for y in range(h)] 
-
+matrix = defaultdict(int)
 for line in content:
-    splitted = line.split(" ")
-    
-    # Coordinates
-    coordinates = splitted[2].split(",")
-    x = int(coordinates[0])
-    y = int(coordinates[1][:-1])
-    
-    # Area
-    area = splitted[3].split("x")
-    endWidth = int(area[0]) + x
-    endHeight = int(area[1]) + y
+    num, x, y, w, h = parse(line)
+    for i in range(w):
+        for j in range(h):
+            matrix[(x+i,y+j)] += 1
 
-    print("Width: = ", x,endWidth)
-    print("Height: = ", y,endHeight)
+# the length of of the values bigger than one in the kvp == area
+print(len([v for k,v in matrix.items() if v > 1]))
 
-    for i in range(x,endWidth):
-        for j in range(y,endHeight):
-            matrix[i][j] += 1
-
+# Part 2
+claims        = set()
+overlapClaims = set()
+for line in content:
+    num, x, y, w, h = parse(line)
     
+    claims.add(num)
+    for i in range(w):
+        for j in range(h):
+            offsetTuple = (x+i, y+j)
+            if matrix[offsetTuple] > 1:
+                overlapClaims.add(num)
+
+# first difference between sets shows one that does not overlap
+print(next(f for f in claims - overlapClaims))
