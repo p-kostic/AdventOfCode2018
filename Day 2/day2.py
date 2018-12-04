@@ -2,7 +2,7 @@
 with open('input.txt') as f:
     content = f.readlines()
 
-# Part 2 
+# Part 1
 doubles = 0
 triples = 0
 
